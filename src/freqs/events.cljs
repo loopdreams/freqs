@@ -18,9 +18,10 @@
 
 (re-frame/reg-event-db
  ::get-word-frequencies
- (fn [db _]
+ (fn [db [_ case?]]
    (let [text-input (:text-input db)
-         results (f/count-word-frequencies text-input)]
+         results (if case? (f/count-word-frequencies text-input true)
+                     (f/count-word-frequencies text-input) )]
      (assoc db :results results))))
 
 (re-frame/reg-event-db

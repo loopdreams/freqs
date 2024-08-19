@@ -5,17 +5,19 @@
 (def stopwords #{"i" "me" "my" "myself" "we" "our" "ours" "ourselves" "you" "your" "yours" "yourself" "yourselves" "he" "him" "his" "himself" "she" "her" "hers" "herself" "it" "its" "itself" "they" "them" "their" "theirs" "themselves" "what" "which" "who" "whom" "this" "that" "these" "those" "am" "is" "are" "was" "were" "be" "been" "being" "have" "has" "had" "having" "do" "does" "did" "doing" "a" "an" "the" "and" "but" "if" "or" "because" "as" "until" "while" "of" "at" "by" "for" "with" "about" "against" "between" "into" "through" "during" "before" "after" "above" "below" "to" "from" "up" "down" "in" "out" "on" "off" "over" "under" "again" "further" "then" "once" "here" "there" "when" "where" "why" "how" "all" "any" "both" "each" "few" "more" "most" "other" "some" "such" "no" "nor" "not" "only" "own" "same" "so" "than" "too" "very" "s" "t" "can" "will" "just" "don" "should" "now"})
 
 
-(defn count-word-frequencies [text]
-  (->> text
-       (re-seq #"\w+")
-       (map str/lower-case)
-       frequencies))
+(defn count-word-frequencies [text & case?]
+  (if-not case?
+    (->> text
+         (re-seq #"\w+")
+         (map str/lower-case)
+         frequencies)
+    (->> text
+         (re-seq #"\w+")
+         frequencies)))
 
 
 (defn remove-stopwords [freqs]
   (apply (partial dissoc freqs) stopwords))
-
-
 
 
 ;; Stats
@@ -31,3 +33,8 @@
        (take n-words)
        (map first)
        (map (fn [w] [w (count w)]))))
+
+(defn avg-word-length [freqs]
+  (let [wc (count (keys freqs))
+        total-len (reduce #(+ %1 (count %2)) 0 (keys freqs))]
+    (/ total-len wc)))

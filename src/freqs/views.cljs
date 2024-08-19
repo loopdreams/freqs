@@ -3,7 +3,8 @@
    [re-frame.core :as re-frame]
    [freqs.subs :as subs]
    [freqs.events :as events]
-   [freqs.frequencies :as f]))
+   [freqs.frequencies :as f]
+   [goog.string :as gstring]))
 
 (defn input-form []
   (let [text-input @(re-frame/subscribe [::subs/text-input])]
@@ -24,7 +25,12 @@
    [:input {:type "checkbox"
             :class "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             :on-change #(re-frame/dispatch [::events/update-stopwords-pref (-> % .-target .-checked)])}]
-   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} "Include stopwords?"]])
+
+   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} "Include stopwords?"]
+   [:input {:type "checkbox"
+            :class "ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            :on-change #(re-frame/dispatch [::events/get-word-frequencies (-> % .-target .-checked)])}]
+   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} "Case sensitive?"]])
 
 (defn stat-component [title value]
   [:div {:class "flex justify-between w-64 py-2"}
@@ -97,6 +103,7 @@
       [:h2 {:class "text-2xl font-bold py-2"} "Stats"]
       [stat-component "Number of Words" (f/word-count results)]
       [stat-component "Number of Unique Words" (f/unique-wrods results)]
+      [stat-component "Average Word Length" (gstring/format "%.2f" (f/avg-word-length results))]
       [:p {:class "font-bold pr-5 py-2"} "Longest Words:"]
       (into
        [:div {:class "flex flex-wrap py-2"}]
