@@ -125,17 +125,28 @@
 
 (def site-title
   [:div
-      [:h1 {:class "pt-5 mb-4 text-2xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl"}
+      [:h1 {:class "pt-5 mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl lg:text-4xl"}
        "Word"
        [:span {:class "text-transparent bg-clip-text bg-gradient-to-r to-cyan-900 from-sky-400"}
         " Frequencies"]]])
 
+(def site-footer
+  (let [link-style "text-blue-600 dark:text-blue-500 hover:underline"]
+    [:footer {:class "sticky top-[100vh]"}
+     [:div {:class "w-full mx-auto py-2 flex flex-row justify-center space-x-2 mb-2 rounded text-sm border-t-2 text-slate-500"}
+      [:p [:a {:href "https://eoin.site"
+               :class link-style} "eoin.site"]]
+      [:p "|"]
+      [:p "Source code available on " [:a {:href "link"
+                                           :class link-style} "Github"]]]]))
+
 (defn main-panel []
   (let [results @(re-frame/subscribe [::subs/results])]
-    [:div {:class "flex flex-col justify-center max-w-prose m-auto"}
+    [:div {:class "flex flex-col justify-center max-w-prose m-auto min-h-screen px-2"}
      site-title
      [:p {:class "pb-5 text-slate-500"} "A simple tool for counting the frequencies of words in a piece of text."]
      [input-form]
      (when results
        [:div {:class "my-5 p-5 sm:border sm:border-indigo-600"}
-        [results-display results]])]))
+        [results-display results]])
+     site-footer]))
