@@ -4,7 +4,8 @@
    [freqs.subs :as subs]
    [freqs.events :as events]
    [freqs.frequencies :as f]
-   [goog.string :as gstring]))
+   [goog.string :as gstring]
+   [goog.string.format]))
 
 (defn input-form []
   [:div
