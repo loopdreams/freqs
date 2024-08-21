@@ -25,6 +25,6 @@
      (assoc db :results results))))
 
 (re-frame/reg-event-db
- ::update-stopwords-pref
- (fn [db [_ status]]
-   (assoc db :stopwords? status)))
+ ::update-result-filters
+ (fn [db [_ filter status]]
+   (assoc-in db [:result-filters filter] status)))

@@ -1,3 +1,5 @@
 (ns freqs.db)
 
-(def default-db {:stopwords? false})
+(def default-db {:result-filters {:stopwords    false
+                                  :numbers      false
+                                  :single-chars false}})

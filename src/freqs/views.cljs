@@ -19,17 +19,23 @@
               :on-click #(re-frame/dispatch [::events/get-word-frequencies])}
      "Get word frequencies"]]])
 
-(defn results-filters []
+(defn result-filter-item [label event & opt]
   [:div
    [:input {:type "checkbox"
             :class "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            :on-change #(re-frame/dispatch [::events/update-stopwords-pref (-> % .-target .-checked)])}]
+            :on-change #(re-frame/dispatch
+                         (if opt
+                           [event (first opt) (-> % .-target .-checked)]
+                           [event (-> % .-target .-checked)]))}]
+   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} label]])
 
-   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} "Include stopwords?"]
-   [:input {:type "checkbox"
-            :class "ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            :on-change #(re-frame/dispatch [::events/get-word-frequencies (-> % .-target .-checked)])}]
-   [:label {:class "ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"} "Case sensitive?"]])
+(defn results-filters []
+  [:div
+   [result-filter-item "Remove stopwords" ::events/update-result-filters :stopwords]
+   [result-filter-item "Remove numbers" ::events/update-result-filters :numbers]
+   [result-filter-item "Remove single-character words" ::events/update-result-filters :single-chars]
+   [result-filter-item "Case sensitive?" ::events/get-word-frequencies]])
+
 
 (defn stat-component [title value]
   [:div {:class "flex justify-between w-64 py-2"}
@@ -89,10 +95,13 @@
                     (reverse (sort-by val results))))]))
 
 (defn results-display [results]
-  (let [stopwords? @(re-frame/subscribe [::subs/stopwords?])
-        results    (if stopwords?
-                     results
-                     (f/remove-stopwords results))
+  (let [stopwords?    @(re-frame/subscribe [::subs/result-filters :stopwords])
+        numbers?      @(re-frame/subscribe [::subs/result-filters :numbers])
+        single-chars? @(re-frame/subscribe [::subs/result-filters :single-chars])
+        results       (cond-> results
+                        stopwords? f/remove-stopwords
+                        numbers?   f/remove-numbers
+                        single-chars? f/remove-single-chars)
         section-break [:hr {:class "my-6"}]]
     [:div
      [results-filters]

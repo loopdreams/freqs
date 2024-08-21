@@ -13,6 +13,6 @@
    (:text-input db)))
 
 (re-frame/reg-sub
- ::stopwords?
- (fn [db]
-   (:stopwords? db)))
+ ::result-filters
+ (fn [db [_ filter]]
+   (get-in db [:result-filters filter])))
