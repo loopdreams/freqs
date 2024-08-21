@@ -137,7 +137,7 @@
       [:p [:a {:href "https://eoin.site"
                :class link-style} "eoin.site"]]
       [:p "|"]
-      [:p "Source code available on " [:a {:href "link"
+      [:p "Source code available on " [:a {:href "https://github.com/loopdreams/freqs"
                                            :class link-style} "Github"]]]]))
 
 (defn main-panel []
