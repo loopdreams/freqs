@@ -7,12 +7,12 @@
    [goog.string :as gstring]))
 
 (defn input-form []
-  [:div {:class "px-4"}
+  [:div
    [:div
     [:textarea {:class "block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 :rows 5
                 :cols 80
-                :placeholder "Paste Your Text Here"
+                :placeholder "Paste your text here"
                 :on-change #(re-frame/dispatch [::events/update-text-input (-> % .-target .-value)])}]]
    [:div
     [:button {:class "mt-6 select-none rounded-lg bg-blue-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -20,7 +20,7 @@
      "Get word frequencies"]]])
 
 (defn result-filter-item [label event & opt]
-  [:div
+  [:div {:class "flex items-center mb-4"}
    [:input {:type "checkbox"
             :class "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             :on-change #(re-frame/dispatch
@@ -39,7 +39,7 @@
 
 (defn stat-component [title value]
   [:div {:class "flex justify-between w-64 py-2"}
-   [:p {:class "font-bold pr-5"} title]
+   [:p {:class "font-semibold pr-5"} title]
    [:p {:class "text-fuchsia-700 pr-5"} value]])
 
 (defn longest-words [results]
@@ -71,16 +71,15 @@
 (defn copy-table-data []
   (let [data @(re-frame/subscribe [::subs/results])
         csv (data->csv-string data)]
-    [:div {:class "group"}
+    [:div {:class "group flex flex-row py-1"}
+     [:span
+      {:class "mr-2 opacity-0 group-hover:opacity-100 transition-opacity bg-fuchsia-100 text-black-400 px-2 py-3 text-sm rounded-md mx-auto"}
+      "Copy unfiltered results data with csv formatting"]
      [:button
-      {:class "relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
-       :href "javascript:"
+      {:class "font-medium text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
        :on-click #(do (.stopPropagation %)
                       (copy-to-clipboard csv))}
-      [:span {:class "far fa-copy text-base"}]]
-     [:span
-      {:class "group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 rounded-md absolute -translate-y-10 -translate-x-28 opacity-0 m-4 mx-auto"}
-      "Copy table data with csv formatting"]]))
+      [:span {:class "far fa-copy text-base"}]]]))
 
 (defn word-frequencies-table [results]
   (into [:table {:class "w-full text-sm text-left rtl:text-right text-gray-500"}]
@@ -113,30 +112,29 @@
       [stat-component "Number of Words" (f/word-count results)]
       [stat-component "Number of Unique Words" (f/unique-wrods results)]
       [stat-component "Average Word Length" (gstring/format "%.2f" (f/avg-word-length results))]
-      [:p {:class "font-bold pr-5 py-2"} "Longest Words:"]
+      [:p {:class "font-semibold pr-5 py-2"} "Longest Words:"]
       [longest-words results]]
 
      section-break
 
      [:div
       [:div {:class "flex justify-between"}
-       [:h2 {:class "text-2xl font-bold pb-4"} "Word Frequencies"]
+       [:h2 {:class "text-2xl font-bold pt-2"} "Word Frequencies"]
        [copy-table-data]]
       [word-frequencies-table results]]]))
 
 (def site-title
   [:div
-      [:h1 {:class "pl-4 pt-5 mb-4 text-2xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl"}
+      [:h1 {:class "pt-5 mb-4 text-2xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl"}
        "Word"
        [:span {:class "text-transparent bg-clip-text bg-gradient-to-r to-cyan-900 from-sky-400"}
         " Frequencies"]]])
-
 
 (defn main-panel []
   (let [results @(re-frame/subscribe [::subs/results])]
     [:div {:class "flex flex-col justify-center max-w-prose m-auto"}
      site-title
-     [:p {:class "px-5 pb-5 text-slate-500"} "A simple tool for counting the frequencies of words in a piece of text."]
+     [:p {:class "pb-5 text-slate-500"} "A simple tool for counting the frequencies of words in a piece of text."]
      [input-form]
      (when results
        [:div {:class "my-5 p-5 sm:border sm:border-indigo-600"}
