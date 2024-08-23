@@ -41,15 +41,15 @@
 
 (defn stat-component [title value]
   [:div {:class "flex justify-between w-64 py-2"}
-   [:p {:class "font-semibold pr-5"} title]
-   [:p {:class "text-fuchsia-700 pr-5"} value]])
+   [:p {:class "font-semibold pr-5 dark:text-slate-100"} title]
+   [:p {:class "text-fuchsia-700 pr-5 dark:text-fuchsia-200"} value]])
 
 (defn longest-words [results]
   (into
        [:div {:class "flex flex-wrap py-2"}]
        (for [w    (f/longest-words results 5)
              :let [[word length] w]]
-         [:p {:class "bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 m-1 rounded dark:bg-blue-900 dark:text-blue-300"}
+         [:p {:class "bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 m-1 rounded dark:bg-blue-900 dark:text-blue-200"}
           (str word " (" length ")")])))
 
 (defn copy-to-clipboard [val]
@@ -78,19 +78,19 @@
       {:class "mr-2 opacity-0 group-hover:opacity-100 transition-opacity bg-fuchsia-100 text-black-400 px-2 py-3 text-sm rounded-md mx-auto"}
       "Copy unfiltered results data with csv formatting"]
      [:button
-      {:class "font-medium text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+      {:class "dark:bg-slate-100 font-medium text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
        :on-click #(do (.stopPropagation %)
                       (copy-to-clipboard csv))}
       [:span {:class "far fa-copy text-base"}]]]))
 
 (defn word-frequencies-table [results]
-  (into [:table {:class "w-full text-sm text-left rtl:text-right text-gray-500"}]
-        [[:thead {:class "text-xs text-gray-900 uppercase bg-gray-50"}
+  (into [:table {:class "w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-100"}]
+        [[:thead {:class "text-xs text-gray-900 dark:text-gray-50 uppercase bg-gray-50 dark:bg-slate-800"}
           [:tr {:style {:user-select "text"}}
            [:th {:class "px-6 py-3"} "Word"]
            [:th {:class "px-6 py-3"}"Word Count"]]]
          (into [:tbody]
-               (map (fn [[word fq]] [:tr {:class "bg-white"}
+               (map (fn [[word fq]] [:tr {:class "bg-white dark:bg-slate-700"}
                                      [:td {:class "px-6 py-2"} word]
                                      [:td {:class "px-6 py-2"} fq]])
                     (reverse (sort-by val results))))]))
@@ -110,18 +110,18 @@
      section-break
 
      [:div
-      [:h2 {:class "text-2xl font-bold py-2"} "Stats"]
+      [:h2 {:class "text-2xl font-bold py-2 dark:text-slate-100"} "Stats"]
       [stat-component "Number of Words" (f/word-count results)]
       [stat-component "Number of Unique Words" (f/unique-wrods results)]
       [stat-component "Average Word Length" (gstring/format "%.2f" (f/avg-word-length results))]
-      [:p {:class "font-semibold pr-5 py-2"} "Longest Words:"]
+      [:p {:class "font-semibold pr-5 py-2 dark:text-slate-100"} "Longest Words:"]
       [longest-words results]]
 
      section-break
 
      [:div
       [:div {:class "flex justify-between"}
-       [:h2 {:class "text-2xl font-bold pt-2"} "Word Frequencies"]
+       [:h2 {:class "text-2xl font-bold pt-2 dark:text-slate-100"} "Word Frequencies"]
        [copy-table-data]]
       [word-frequencies-table results]]]))
 
@@ -129,13 +129,13 @@
   [:div
       [:h1 {:class "pt-5 mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl lg:text-4xl"}
        "Word"
-       [:span {:class "text-transparent bg-clip-text bg-gradient-to-r to-cyan-900 from-sky-400"}
+       [:span {:class "text-transparent bg-clip-text bg-gradient-to-r to-cyan-900 from-sky-400 "}
         " Frequencies"]]])
 
 (def site-footer
-  (let [link-style "text-blue-600 dark:text-blue-500 hover:underline"]
+  (let [link-style "text-blue-600 dark:text-blue-200 hover:underline"]
     [:footer {:class "sticky top-[100vh]"}
-     [:div {:class "w-full mx-auto py-2 flex flex-row justify-center space-x-2 mb-2 rounded text-sm border-t-2 text-slate-500"}
+     [:div {:class "w-full mx-auto py-2 flex flex-row justify-center space-x-2 mb-2 rounded text-sm border-t-2 text-slate-500 dark:text-slate-100"}
       [:p [:a {:href "https://eoin.site"
                :class link-style} "eoin.site"]]
       [:p "|"]
@@ -144,11 +144,12 @@
 
 (defn main-panel []
   (let [results @(re-frame/subscribe [::subs/results])]
-    [:div {:class "flex flex-col justify-center max-w-prose m-auto min-h-screen px-2"}
-     site-title
-     [:p {:class "pb-5 text-slate-500"} "A simple tool for counting the frequencies of words in a piece of text."]
-     [input-form]
-     (when results
-       [:div {:class "my-5 p-5 sm:border sm:border-indigo-600"}
-        [results-display results]])
-     site-footer]))
+    [:div {:class "dark:bg-slate-800"}
+     [:div {:class "flex flex-col justify-center max-w-prose m-auto min-h-screen px-2"}
+      site-title
+      [:p {:class "pb-5 text-slate-500 dark:text-slate-200"} "A simple tool for counting the frequencies of words in a piece of text."]
+      [input-form]
+      (when results
+        [:div {:class "my-5 p-5 sm:border sm:border-indigo-600 dark:border-indigo-100"}
+         [results-display results]])
+      site-footer]]))
